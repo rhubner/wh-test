@@ -1,25 +1,22 @@
 package com.drzkov.whtest;
 
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.FileFilter;
 
 public class Find {
 
-	private File startDir;
+	private Config c;
 	
-	private Pattern pattern;
+	private FileFilter filter;
 	
-	public Find(File startDir, String fileName) {
-		if(!startDir.isDirectory()) {
-			throw new IllegalArgumentException("StartDir must be Directory");
-		}
-		this.startDir = startDir;
-		this.pattern = Pattern.compile("^" + fileName + "$");
+	public Find(Config c) {
+		this.c = c;
+		this.filter = c.getFileFilter();
+		
 	}
 		
 	public void traverse() {	
-		traverseInternal(startDir, "");
+		traverseInternal(c.getStartDirectory(), "");
 	}
 	
 	/**
@@ -31,8 +28,8 @@ public class Find {
 			if(f.isDirectory()) {
 				traverseInternal(f, dirPrefix + f.getName() + File.separator);
 			}else {
-				Matcher m = pattern.matcher(f.getName());
-				if(m.matches()) {
+				
+				if(filter.accept(f)) {
 					System.out.println(dirPrefix + f.getName());
 				}
 			}
